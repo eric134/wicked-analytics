@@ -1,7 +1,6 @@
 """
-generate_data_js.py
-Reads the clean CSVs and writes js/data.js as JavaScript constants.
-Run this whenever the scrapers produce new data.
+Turns the clean CSVs into js/data.js so the dashboard can load them without
+a fetch. Re-run this after the scrapers update the data.
 """
 
 import json

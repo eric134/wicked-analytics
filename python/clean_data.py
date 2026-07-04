@@ -1,11 +1,6 @@
 """
-clean_data.py
-Reads raw scraped CSVs, applies EDA fixes, and writes clean versions.
-
-Outputs:
-  data/wicked_broadway_weekly_clean.csv
-  data/wicked_domestic_daily_clean.csv      (Wicked 2024)
-  data/wicked2_domestic_daily_clean.csv     (Wicked: For Good 2025)
+Takes the raw scraped CSVs and produces cleaned versions the dashboard reads.
+Outputs three files: Broadway, Wicked (2024), and Wicked: For Good (2025).
 """
 
 import pandas as pd
@@ -23,12 +18,8 @@ OUT_MOVIE     = os.path.join(BASE, "../data/wicked_domestic_daily_clean.csv")
 OUT_MOVIE2    = os.path.join(BASE, "../data/wicked2_domestic_daily_clean.csv")
 
 
-# ---------------------------------------------------------------------------
-# Broadway cleaning
-# ---------------------------------------------------------------------------
-
 def broadway_season(date):
-    """Return Broadway season label, e.g. '2003-04'. Season runs Sep–Aug."""
+    # Broadway seasons run Sep-Aug, so anything before September belongs to the prior year
     y, m = date.year, date.month
     if m >= 9:
         return f"{y}-{str(y + 1)[2:]}"
@@ -40,18 +31,19 @@ def clean_broadway(raw: pd.DataFrame) -> pd.DataFrame:
     df["week_ending"] = pd.to_datetime(df["week_ending"])
     df = df.sort_values("week_ending").reset_index(drop=True)
 
+    # week_number arrives empty; rebuilt at the end
     df.drop(columns=["week_number"], inplace=True)
 
-    # Fix first-row diff placeholders
+    # First row has no prior week to compare against
     df.loc[0, "diff_gross"] = np.nan
     df.loc[0, "diff_pct_capacity"] = np.nan
 
-    # Label existing rows
+    # A week with zero gross and zero shows means the theatre went dark (2007 strike)
     df["status"] = "normal"
     strike_mask = (df["weekly_gross"] == 0) & (df["performances"] == 0) & (df["previews"] == 0)
     df.loc[strike_mask, "status"] = "dark_strike"
 
-    # Insert placeholder rows for gaps (dark weeks)
+    # Playbill just skips dark weeks, so add placeholder rows to keep the timeline honest
     gap_rows = []
     for i in range(1, len(df)):
         prev = df.loc[i - 1, "week_ending"]
@@ -71,7 +63,7 @@ def clean_broadway(raw: pd.DataFrame) -> pd.DataFrame:
         df = df.sort_values("week_ending").reset_index(drop=True)
 
     df["week_number"] = range(1, len(df) + 1)
-    df["top_ticket"] = df["top_ticket"].ffill()
+    df["top_ticket"] = df["top_ticket"].ffill()   # only changes occasionally
     df["broadway_season"] = df["week_ending"].apply(broadway_season)
 
     col_order = [
@@ -84,10 +76,6 @@ def clean_broadway(raw: pd.DataFrame) -> pd.DataFrame:
     ]
     return df[[c for c in col_order if c in df.columns]]
 
-
-# ---------------------------------------------------------------------------
-# Movie cleaning (shared logic)
-# ---------------------------------------------------------------------------
 
 MOVIE_COL_ORDER = [
     "date", "day_of_week", "day_number", "phase", "rank",
@@ -103,7 +91,7 @@ def _base_movie_clean(raw: pd.DataFrame) -> pd.DataFrame:
 
 
 def clean_movie(raw: pd.DataFrame) -> pd.DataFrame:
-    """Wicked (2024) — Part 1. Splits into Initial Release vs. Re-Release."""
+    # Part 1 played twice: an initial run, then a re-release around Part 2's launch
     df = _base_movie_clean(raw)
 
     initial_end     = pd.Timestamp("2025-03-13")
@@ -114,22 +102,18 @@ def clean_movie(raw: pd.DataFrame) -> pd.DataFrame:
             return "Initial Release"
         if date >= rerelease_start:
             return "Re-Release"
-        return "Off-Screen"  # safety net — no rows should land here
+        return "Off-Screen"   # nothing should land here, but just in case
 
     df["phase"] = df["date"].apply(phase)
     return df[[c for c in MOVIE_COL_ORDER if c in df.columns]]
 
 
 def clean_movie2(raw: pd.DataFrame) -> pd.DataFrame:
-    """Wicked: For Good (2025) — Part 2. All rows are Initial Release."""
+    # Part 2 is still in its first run
     df = _base_movie_clean(raw)
     df["phase"] = "Initial Release"
     return df[[c for c in MOVIE_COL_ORDER if c in df.columns]]
 
-
-# ---------------------------------------------------------------------------
-# Validation
-# ---------------------------------------------------------------------------
 
 def validate_broadway(df):
     print("\n  --- Broadway ---")
@@ -150,14 +134,9 @@ def validate_movie(label, df):
     print(f"  Opening day gross: ${df.iloc[0].daily_gross:,.0f} ({df.iloc[0].date.date()})")
 
 
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
-
 def main():
     print("=== Wicked Analytics — Data Cleaning ===")
 
-    # Broadway
     b_raw = pd.read_csv(RAW_BROADWAY)
     b_clean = clean_broadway(b_raw)
     validate_broadway(b_clean)
@@ -165,14 +144,13 @@ def main():
     b_clean.to_csv(OUT_BROADWAY, index=False)
     print(f"  Saved -> {OUT_BROADWAY}")
 
-    # Wicked (2024)
     m_raw = pd.read_csv(RAW_MOVIE)
     m_clean = clean_movie(m_raw)
     validate_movie("Wicked (2024)", m_clean)
     m_clean.to_csv(OUT_MOVIE, index=False)
     print(f"  Saved -> {OUT_MOVIE}")
 
-    # Wicked: For Good (2025)
+    # Part 2 might not be scraped yet on a fresh checkout
     if os.path.exists(RAW_MOVIE2):
         m2_raw = pd.read_csv(RAW_MOVIE2)
         m2_clean = clean_movie2(m2_raw)
@@ -180,7 +158,7 @@ def main():
         m2_clean.to_csv(OUT_MOVIE2, index=False)
         print(f"  Saved -> {OUT_MOVIE2}")
     else:
-        print(f"\n  Wicked: For Good raw file not found — skipping.")
+        print("\n  Wicked: For Good raw file not found — skipping.")
 
     print("\nDone.")
 

@@ -1,4 +1,4 @@
-// ---- Color palette ----
+// Green = Broadway, gold = Wicked (2024), teal = Wicked: For Good (2025)
 const GREEN      = "#6DC54A";
 const GREEN_FILL = "rgba(109,197,74,0.12)";
 const GOLD       = "#D4AF37";
@@ -11,12 +11,11 @@ const MUTED      = "#555";
 const GRID_COLOR  = "#1f1f1f";
 const TICK_COLOR  = "#666";
 
-// ---- Formatters ----
 const fmtDollar   = (n) => n == null ? "—" : "$" + Math.round(n).toLocaleString("en-US");
 const fmtMillions = (n) => n == null ? "—" : "$" + (n / 1e6).toFixed(1) + "M";
 const fmtDate     = (iso) => iso ? iso.split("T")[0] : "";
 
-// ---- Shared axis factories ----
+// Axis config gets reused across charts, so build it once here
 function timeXAxis(unit) {
   return {
     type: "time",
@@ -42,7 +41,6 @@ function countYAxis() {
   };
 }
 
-// ---- Stat cards ----
 function renderStats() {
   const normal = BROADWAY_DATA.filter((r) => r.status === "normal");
 
@@ -53,19 +51,18 @@ function renderStats() {
   document.getElementById("stat-bway-seasons").textContent   =
     new Set(normal.map((r) => r.broadway_season)).size;
 
-  // Wicked (2024)
   document.getElementById("stat-m1-total").textContent   =
     fmtMillions(Math.max(...MOVIE1_DATA.map((r) => r.cumulative_gross)));
   document.getElementById("stat-m1-opening").textContent = fmtMillions(MOVIE1_DATA[0].daily_gross);
 
-  // Wicked: For Good (2025)
+  // Part 2 may be empty on a fresh checkout before it's scraped
   if (MOVIE2_DATA.length > 0) {
     document.getElementById("stat-m2-total").textContent   =
       fmtMillions(Math.max(...MOVIE2_DATA.map((r) => r.cumulative_gross)));
     document.getElementById("stat-m2-opening").textContent = fmtMillions(MOVIE2_DATA[0].daily_gross);
   }
 
-  // Footer last-updated date
+  // Newest date across all three datasets drives the footer stamp
   const dates = [
     ...MOVIE1_DATA.map((r) => r.date),
     ...MOVIE2_DATA.map((r) => r.date),
@@ -75,7 +72,6 @@ function renderStats() {
     "Data through " + fmtDate(dates[dates.length - 1]);
 }
 
-// ---- Broadway history chart ----
 function initBroadwayChart() {
   const labels = BROADWAY_DATA.map((r) => r.week_ending);
   const data   = BROADWAY_DATA.map((r) => r.status === "normal" ? r.weekly_gross : null);
@@ -163,7 +159,7 @@ function initBroadwayChart() {
   });
 }
 
-// ---- Generic daily gross bar chart ----
+// Shared by both films' daily charts; re-release days get a muted color
 function initDailyChart(canvasId, movieData, primaryColor, reReleaseColor) {
   const colors = movieData.map((r) =>
     r.phase === "Re-Release" ? (reReleaseColor || MUTED) : primaryColor
@@ -193,7 +189,7 @@ function initDailyChart(canvasId, movieData, primaryColor, reReleaseColor) {
   });
 }
 
-// ---- Generic theater count chart (splits by phase to show gap) ----
+// Split the line by phase so the off-screen gap doesn't get bridged
 function initTheaterChart(canvasId, movieData, primaryColor, primaryFill) {
   const initial   = movieData.filter((r) => r.phase === "Initial Release");
   const rerelease = movieData.filter((r) => r.phase === "Re-Release");
@@ -240,7 +236,6 @@ function initTheaterChart(canvasId, movieData, primaryColor, primaryFill) {
   });
 }
 
-// ---- Broadway season averages ----
 function initSeasonChart() {
   const normal = BROADWAY_DATA.filter((r) => r.status === "normal");
 
@@ -284,7 +279,6 @@ function initSeasonChart() {
   });
 }
 
-// ---- Boot ----
 window.addEventListener("DOMContentLoaded", () => {
   if (typeof BROADWAY_DATA === "undefined" || typeof MOVIE1_DATA === "undefined") {
     document.querySelector("main").innerHTML =

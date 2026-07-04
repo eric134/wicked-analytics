@@ -141,8 +141,7 @@ def scrape_all_pages():
         print(f"  Got {len(records)} rows.")
         all_records.extend(records)
 
-        # Detect last page: if fewer rows than a full page, we're done
-        # (full pages have 52 rows; last page has fewer)
+        # Full pages hold 52 weeks; a short page means we've hit the end
         if len(records) < 52:
             print("  Last page reached.")
             break

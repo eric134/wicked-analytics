@@ -1,7 +1,6 @@
 """
-scrape_boxoffice.py
-Scrapes daily domestic box office for both Wicked films from Box Office Mojo.
-Writes raw CSVs; skips a film if its data is already fresh (within STALENESS_DAYS).
+Pulls daily domestic box office for both Wicked films from Box Office Mojo.
+Each film is skipped if its CSV is already fresh (within STALENESS_DAYS).
 """
 
 import os
@@ -44,6 +43,7 @@ COLUMN_MAP = {
     "To Date":  "cumulative_gross",
     "Day":      "day_number",
 }
+# The two % columns have garbled headers, so grab them by position instead
 PCT_YD_IDX = 4
 PCT_LW_IDX = 5
 
