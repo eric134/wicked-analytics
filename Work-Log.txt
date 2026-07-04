@@ -1,16 +1,14 @@
 ---------- 03/17/26 ----------
-Phase 1 ✅ Complete
+Phase 1 - done
+- set up folder structure
+- initialized git repo and connected to GitHub
+- committed and pushed everything
 
-Folder structure created
-GitHub repo initialized and connected
-All files committed and pushed
-
-Phase 2 — In Progress
-
-✅ Virtual environment set up correctly
-✅ All libraries installed (requests, pandas, pytrends, beautifulsoup4)
-✅ Successfully connected to Box Office Mojo (status 200)
-⏳ Next step: update scrape_boxoffice.py to extract table data
+Phase 2 - started
+- got the virtual environment working
+- installed the libraries I need (requests, pandas, pytrends, beautifulsoup4)
+- confirmed Box Office Mojo responds (status 200)
+- todo: get scrape_boxoffice.py to actually pull the table data
 
 
 ---------- xx/xx/xx ----------
