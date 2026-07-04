@@ -1,0 +1,44 @@
+name: Monthly Data Refresh
+
+on:
+  schedule:
+    - cron: "0 9 1 * *"   # 9 AM UTC on the 1st of every month
+  workflow_dispatch:        # allow manual trigger from GitHub Actions tab
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Scrape box office data
+        run: python python/scrape_boxoffice.py
+
+      - name: Scrape Broadway data
+        run: python python/scrape_broadway.py
+
+      - name: Clean data
+        run: python python/clean_data.py
+
+      - name: Generate js/data.js
+        run: python python/generate_data_js.py
+
+      - name: Commit and push if data changed
+        run: |
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git add data/ js/data.js
+          git diff --staged --quiet || (
+            git commit -m "chore: monthly data refresh $(date +'%Y-%m-%d')" &&
+            git push
+          )

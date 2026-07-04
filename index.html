@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wicked Analytics</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+</head>
+<body>
+
+  <header>
+    <h1>Wicked Analytics</h1>
+    <p>From Stage to Screen &mdash; 22 Years of Box Office History</p>
+  </header>
+
+  <main>
+
+    <!-- Broadway stat cards -->
+    <div class="stat-group-label">Broadway Musical</div>
+    <section class="stat-cards three">
+      <div class="card">
+        <span class="card-value green" id="stat-bway-peak">—</span>
+        <span class="card-label">Peak Weekly Gross</span>
+        <span class="card-sub" id="stat-bway-peak-date"></span>
+      </div>
+      <div class="card">
+        <span class="card-value green" id="stat-bway-weeks">—</span>
+        <span class="card-label">Performing Weeks</span>
+      </div>
+      <div class="card">
+        <span class="card-value green" id="stat-bway-seasons">—</span>
+        <span class="card-label">Broadway Seasons</span>
+      </div>
+    </section>
+
+    <!-- Film stat cards -->
+    <div class="stat-group-label">At the Box Office</div>
+    <section class="stat-cards four">
+      <div class="card">
+        <span class="card-film-label">Wicked (2024)</span>
+        <span class="card-value gold" id="stat-m1-total">—</span>
+        <span class="card-label">Total Domestic Gross</span>
+      </div>
+      <div class="card">
+        <span class="card-film-label">Wicked (2024)</span>
+        <span class="card-value gold" id="stat-m1-opening">—</span>
+        <span class="card-label">Opening Day</span>
+        <span class="card-sub">Nov 22, 2024</span>
+      </div>
+      <div class="card">
+        <span class="card-film-label">Wicked: For Good (2025)</span>
+        <span class="card-value teal" id="stat-m2-total">—</span>
+        <span class="card-label">Total Domestic Gross</span>
+      </div>
+      <div class="card">
+        <span class="card-film-label">Wicked: For Good (2025)</span>
+        <span class="card-value teal" id="stat-m2-opening">—</span>
+        <span class="card-label">Opening Day</span>
+        <span class="card-sub">Nov 21, 2025</span>
+      </div>
+    </section>
+
+    <!-- Broadway full history -->
+    <section class="chart-section">
+      <div class="chart-header">
+        <h2>Broadway — Weekly Gross (2003&ndash;2026)</h2>
+        <div class="legend">
+          <span class="dot green"></span><span>Normal week</span>
+          <span class="dot red"></span><span>COVID shutdown</span>
+          <span class="dash gold"></span><span>Wicked (2024) release</span>
+          <span class="dash teal"></span><span>Wicked: For Good release</span>
+        </div>
+      </div>
+      <div class="chart-wrapper tall">
+        <canvas id="broadwayChart"></canvas>
+      </div>
+    </section>
+
+    <!-- Daily gross comparison -->
+    <div class="stat-group-label">Daily Box Office Comparison</div>
+    <div class="chart-row">
+      <section class="chart-section">
+        <div class="chart-header">
+          <h2>Wicked (2024) &mdash; Daily Gross</h2>
+          <div class="legend">
+            <span class="dot gold"></span><span>Initial Release</span>
+            <span class="dot muted"></span><span>Re-Release (2025)</span>
+          </div>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="movie1DailyChart"></canvas>
+        </div>
+      </section>
+
+      <section class="chart-section">
+        <div class="chart-header">
+          <h2>Wicked: For Good (2025) &mdash; Daily Gross</h2>
+          <div class="legend">
+            <span class="dot teal"></span><span>Initial Release</span>
+          </div>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="movie2DailyChart"></canvas>
+        </div>
+      </section>
+    </div>
+
+    <!-- Theater count comparison -->
+    <div class="chart-row">
+      <section class="chart-section">
+        <div class="chart-header">
+          <h2>Wicked (2024) &mdash; Theater Count</h2>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="theater1Chart"></canvas>
+        </div>
+      </section>
+
+      <section class="chart-section">
+        <div class="chart-header">
+          <h2>Wicked: For Good (2025) &mdash; Theater Count</h2>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="theater2Chart"></canvas>
+        </div>
+      </section>
+    </div>
+
+    <!-- Broadway season averages -->
+    <section class="chart-section">
+      <div class="chart-header">
+        <h2>Broadway &mdash; Average Weekly Gross by Season</h2>
+        <div class="legend">
+          <span class="dot gold"></span><span>Wicked (2024) era (2024-25)</span>
+          <span class="dot teal"></span><span>Wicked: For Good era (2025-26)</span>
+        </div>
+      </div>
+      <div class="chart-wrapper medium">
+        <canvas id="seasonChart"></canvas>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>Data: <a href="https://www.boxofficemojo.com" target="_blank" rel="noopener">Box Office Mojo</a> &nbsp;&bull;&nbsp; <a href="https://playbill.com" target="_blank" rel="noopener">Playbill</a></p>
+    <p id="footer-updated"></p>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

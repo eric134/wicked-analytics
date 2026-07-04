@@ -1,0 +1,220 @@
+:root {
+  --bg:       #0D0D0D;
+  --surface:  #161616;
+  --surface2: #1f1f1f;
+  --border:   #2a2a2a;
+  --green:    #6DC54A;
+  --gold:     #D4AF37;
+  --teal:     #3BBFB0;
+  --red:      #C94040;
+  --text:     #E2E2E2;
+  --muted:    #555;
+  --font:     'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  min-height: 100vh;
+}
+
+/* ---- Header ---- */
+header {
+  text-align: center;
+  padding: 3rem 2rem 2.5rem;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, #0f1a0c 0%, var(--bg) 100%);
+}
+
+header h1 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--green);
+  text-shadow: 0 0 60px rgba(109, 197, 74, 0.25);
+}
+
+header p {
+  margin-top: 0.6rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* ---- Main layout ---- */
+main {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* ---- Stat group label ---- */
+.stat-group-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+  padding-left: 0.25rem;
+  margin-bottom: -0.5rem;
+}
+
+/* ---- Stat cards ---- */
+.stat-cards {
+  display: grid;
+  gap: 1rem;
+}
+
+.stat-cards.three { grid-template-columns: repeat(3, 1fr); }
+.stat-cards.four  { grid-template-columns: repeat(4, 1fr); }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem 1.25rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.card-film-label {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-bottom: 0.1rem;
+}
+
+.card-value {
+  font-size: 1.55rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--text);
+}
+
+.card-value.green { color: var(--green); }
+.card-value.gold  { color: var(--gold); }
+.card-value.teal  { color: var(--teal); }
+
+.card-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-top: 0.15rem;
+}
+
+.card-sub {
+  font-size: 0.68rem;
+  color: var(--muted);
+}
+
+/* ---- Chart sections ---- */
+.chart-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.4rem 1.5rem 1.5rem;
+}
+
+.chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.1rem;
+}
+
+.chart-header h2 {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 0.7rem;
+  color: var(--muted);
+  flex-wrap: wrap;
+}
+
+.legend .dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text);
+}
+
+.legend .dot.green { background: var(--green); }
+.legend .dot.gold  { background: var(--gold); }
+.legend .dot.teal  { background: var(--teal); }
+.legend .dot.red   { background: var(--red); }
+.legend .dot.muted { background: var(--muted); }
+
+.legend .dash {
+  display: inline-block;
+  width: 16px;
+  height: 2px;
+  background: var(--gold);
+  border-radius: 2px;
+}
+
+.chart-wrapper {
+  position: relative;
+  height: 260px;
+}
+
+.chart-wrapper.tall   { height: 360px; }
+.chart-wrapper.medium { height: 300px; }
+
+/* Two-column chart row */
+.chart-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+/* ---- Footer ---- */
+footer {
+  text-align: center;
+  padding: 2rem;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.72rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+footer a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+footer a:hover { color: var(--text); }
+
+/* ---- Responsive ---- */
+@media (max-width: 1000px) {
+  .stat-cards.four { grid-template-columns: repeat(2, 1fr); }
+  .chart-row       { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 700px) {
+  .stat-cards.three { grid-template-columns: repeat(2, 1fr); }
+  .stat-cards.four  { grid-template-columns: 1fr 1fr; }
+  .chart-header     { flex-direction: column; align-items: flex-start; }
+}
