@@ -131,9 +131,11 @@ function initBroadwayChart() {
                 display: true,
                 content: "Wicked (2024)",
                 color: GOLD,
+                backgroundColor: "rgba(13,13,13,0.9)",
                 font: { size: 10 },
-                position: "start",
+                position: "end",
                 yAdjust: 8,
+                xAdjust: -44,
               },
             },
             film2Line: {
@@ -147,9 +149,11 @@ function initBroadwayChart() {
                 display: true,
                 content: "For Good (2025)",
                 color: TEAL,
+                backgroundColor: "rgba(13,13,13,0.9)",
                 font: { size: 10 },
-                position: "start",
-                yAdjust: 28,
+                position: "end",
+                yAdjust: 30,
+                xAdjust: -44,
               },
             },
           },
@@ -239,12 +243,23 @@ function initTheaterChart(canvasId, movieData, primaryColor, primaryFill) {
 // Line up both films by day-of-release so their runs can be compared directly.
 // Part 1's re-release days are dropped — we only want the original theatrical run.
 function initCumulativeChart() {
-  const toPoints = (data) =>
-    data
-      .filter((r) => r.phase === "Initial Release")
-      .map((r) => ({ x: r.day_number, y: r.cumulative_gross }));
+  // Re-index each film so day 1 = its own first day of data. Box Office Mojo
+  // counts For Good from its Nov 17 preview date, so its raw day numbers start
+  // at 5 — normalizing lets both runs start from the same origin.
+  const toPoints = (data) => {
+    const rows = data.filter((r) => r.phase === "Initial Release");
+    if (rows.length === 0) return [];
+    const firstDay = rows[0].day_number;
+    return rows.map((r) => ({ x: r.day_number - firstDay + 1, y: r.cumulative_gross }));
+  };
 
-  const shared = { tension: 0.3, pointRadius: 0, borderWidth: 2, fill: false };
+  const shared = {
+    tension: 0.3,
+    pointRadius: 0,
+    pointHoverRadius: 4,
+    borderWidth: 2,
+    fill: false,
+  };
 
   const datasets = [
     { ...shared, label: "Wicked (2024)", data: toPoints(MOVIE1_DATA), borderColor: GOLD },
@@ -263,7 +278,8 @@ function initCumulativeChart() {
       scales: {
         x: {
           type: "linear",
-          title: { display: true, text: "Day of release", color: TICK_COLOR, font: { size: 11 } },
+          min: 1,
+          title: { display: true, text: "Days since opening", color: TICK_COLOR, font: { size: 11 } },
           grid: { color: GRID_COLOR },
           ticks: { color: TICK_COLOR },
         },
@@ -272,6 +288,10 @@ function initCumulativeChart() {
       plugins: {
         legend: { display: false },
         tooltip: {
+          // Keep the tooltip clear of the points so days stay readable
+          position: "nearest",
+          caretPadding: 14,
+          yAlign: "bottom",
           callbacks: {
             title: (ctx) => "Day " + ctx[0].parsed.x,
             label: (ctx) => ctx.dataset.label + ": " + fmtDollar(ctx.parsed.y),

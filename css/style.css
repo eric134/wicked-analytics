@@ -173,6 +173,9 @@ main {
   border-radius: 2px;
 }
 
+.legend .dash.gold { background: var(--gold); }
+.legend .dash.teal { background: var(--teal); }
+
 .chart-wrapper {
   position: relative;
   height: 260px;
