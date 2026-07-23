@@ -236,6 +236,52 @@ function initTheaterChart(canvasId, movieData, primaryColor, primaryFill) {
   });
 }
 
+// Line up both films by day-of-release so their runs can be compared directly.
+// Part 1's re-release days are dropped — we only want the original theatrical run.
+function initCumulativeChart() {
+  const toPoints = (data) =>
+    data
+      .filter((r) => r.phase === "Initial Release")
+      .map((r) => ({ x: r.day_number, y: r.cumulative_gross }));
+
+  const shared = { tension: 0.3, pointRadius: 0, borderWidth: 2, fill: false };
+
+  const datasets = [
+    { ...shared, label: "Wicked (2024)", data: toPoints(MOVIE1_DATA), borderColor: GOLD },
+  ];
+  if (MOVIE2_DATA.length > 0) {
+    datasets.push({ ...shared, label: "Wicked: For Good (2025)", data: toPoints(MOVIE2_DATA), borderColor: TEAL });
+  }
+
+  new Chart(document.getElementById("cumulativeChart"), {
+    type: "line",
+    data: { datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: "index", intersect: false },
+      scales: {
+        x: {
+          type: "linear",
+          title: { display: true, text: "Day of release", color: TICK_COLOR, font: { size: 11 } },
+          grid: { color: GRID_COLOR },
+          ticks: { color: TICK_COLOR },
+        },
+        y: dollarYAxis(),
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title: (ctx) => "Day " + ctx[0].parsed.x,
+            label: (ctx) => ctx.dataset.label + ": " + fmtDollar(ctx.parsed.y),
+          },
+        },
+      },
+    },
+  });
+}
+
 function initSeasonChart() {
   const normal = BROADWAY_DATA.filter((r) => r.status === "normal");
 
@@ -294,5 +340,6 @@ window.addEventListener("DOMContentLoaded", () => {
   initDailyChart("movie2DailyChart", MOVIE2_DATA, TEAL,  null);
   initTheaterChart("theater1Chart",  MOVIE1_DATA, GOLD,  GOLD_FILL);
   initTheaterChart("theater2Chart",  MOVIE2_DATA, TEAL,  TEAL_FILL);
+  initCumulativeChart();
   initSeasonChart();
 });
