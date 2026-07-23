@@ -167,14 +167,14 @@ main {
 
 .legend .dash {
   display: inline-block;
-  width: 16px;
+  width: 18px;
   height: 2px;
-  background: var(--gold);
-  border-radius: 2px;
+  color: var(--gold);
+  background: repeating-linear-gradient(90deg, currentColor 0 5px, transparent 5px 9px);
 }
 
-.legend .dash.gold { background: var(--gold); }
-.legend .dash.teal { background: var(--teal); }
+.legend .dash.gold { color: var(--gold); }
+.legend .dash.teal { color: var(--teal); }
 
 .chart-wrapper {
   position: relative;
